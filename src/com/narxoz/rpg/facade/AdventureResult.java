@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class AdventureResult {
+public class AdventureResult{
     private String winner;
     private int rounds;
     private String reward;

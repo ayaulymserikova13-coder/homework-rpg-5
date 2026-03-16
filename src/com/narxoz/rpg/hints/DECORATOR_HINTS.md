@@ -1,5 +1,4 @@
 # Decorator Pattern Hints
-
 ## Goal
 Add behavior to an attack object at runtime without changing the object interface.
 

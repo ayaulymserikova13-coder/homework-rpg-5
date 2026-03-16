@@ -1,5 +1,4 @@
 # Facade Pattern Hints
-
 ## Goal
 Provide one simple entry point for a dungeon run while hiding subsystem complexity.
 
