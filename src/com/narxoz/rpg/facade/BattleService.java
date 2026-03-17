@@ -15,23 +15,59 @@ public class BattleService {
     }
 
     public AdventureResult battle(HeroProfile hero, BossEnemy boss, AttackAction action) {
-        // TODO: Implement the battle flow.
-        // Questions to answer:
-        // - Who attacks first?
-        // - How many rounds are allowed?
-        // - How is damage resolved?
-        // - How will randomness affect the result, if at all?
-        AdventureResult result = new AdventureResult();
-        result.setWinner("TODO");
-        result.setRounds(0);
-        result.setReward("TODO");
-        result.addLine("TODO: implement battle logic");
+        AdventureResult result=new AdventureResult();
 
-        // Keep the field in use so students can decide whether to rely on it.
-        if (random.nextInt(1) == 0) {
-            // TODO: Replace placeholder branch with real deterministic or random logic.
+        if (hero==null || boss==null || action==null) {
+            result.setWinner("No contest");
+            result.setRounds(0);
+            result.setReward("No reward");
+            result.addLine("Battle could not start because required participants were missing.");
+            return result;
         }
 
+        final int maxRounds=10;
+        int round=0;
+
+        result.addLine("Battle started: " +hero.getName()+" vs "+boss.getName());
+        result.addLine("Chosen action: " +action.getActionName());
+        result.addLine("Action effects: " +action.getEffectSummary());
+
+        while (hero.isAlive() && boss.isAlive() && round<maxRounds) {
+            round++;
+
+            int heroDamage=action.getDamage()+random.nextInt(4);
+            boss.takeDamage(heroDamage);
+            result.addLine("Round "+round+": "+hero.getName()+" deals "
+                    + heroDamage+" damage. " + boss.getName()+" HP = "+boss.getHealth());
+
+            if (!boss.isAlive()) {
+                break;
+            }
+
+            int bossDamage=boss.getAttackPower()+random.nextInt(3);
+            hero.takeDamage(bossDamage);
+            result.addLine("Round "+round+": "+boss.getName()+" deals "
+                    + bossDamage+" damage. "+hero.getName()+" HP = "+hero.getHealth());
+        }
+
+        result.setRounds(round);
+
+        if (hero.isAlive() && !boss.isAlive()) {
+            result.setWinner(hero.getName());
+            result.addLine("Battle result: hero victory.");
+        } else if (!hero.isAlive() && boss.isAlive()) {
+            result.setWinner(boss.getName());
+            result.addLine("Battle result: boss victory.");
+        } else {
+            if (hero.getHealth()>=boss.getHealth()) {
+                result.setWinner(hero.getName());
+                result.addLine("Battle reached round limit. Winner decided by remaining HP: hero victory.");
+            } else {
+                result.setWinner(boss.getName());
+                result.addLine("Battle reached round limit. Winner decided by remaining HP: boss victory.");
+            }
+        }
+        result.setReward("Pending reward calculation");
         return result;
     }
 }
