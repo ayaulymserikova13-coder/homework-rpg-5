@@ -14,45 +14,59 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("=== Homework 5 Demo: Decorator + Facade ===\n");
 
-        // TODO: Create a hero and a boss with your own meaningful stats.
-        HeroProfile hero = new HeroProfile("TODO Hero", 100);
-        BossEnemy boss = new BossEnemy("TODO Boss", 120, 15);
+        HeroProfile hero=new HeroProfile("Aerin the Ranger", 110);
+        BossEnemy boss=new BossEnemy("Shadow Dragon", 125, 14);
 
-        // TODO: Start with a base action and then create several decorated versions.
-        AttackAction basic = new BasicAttack("Strike", 10);
-        AttackAction enhanced = new FireRuneDecorator(
+        AttackAction basic=new BasicAttack("Strike", 12);
+        AttackAction fireStrike=new FireRuneDecorator(basic);
+        AttackAction venomStrike=new PoisonCoatingDecorator(basic);
+        AttackAction assassinStrike=new CriticalFocusDecorator(
+                new PoisonCoatingDecorator(basic)
+        );
+        AttackAction ultimateStrike=new FireRuneDecorator(
                 new PoisonCoatingDecorator(
                         new CriticalFocusDecorator(basic)
                 )
         );
 
         System.out.println("--- Decorator Preview ---");
-        System.out.println("Base action: " + basic.getActionName());
-        System.out.println("Base damage: " + basic.getDamage());
-        System.out.println("Base effects: " + basic.getEffectSummary());
-        System.out.println();
-        System.out.println("Enhanced action: " + enhanced.getActionName());
-        System.out.println("Enhanced damage: " + enhanced.getDamage());
-        System.out.println("Enhanced effects: " + enhanced.getEffectSummary());
+        printAction("Base action", basic);
+        printAction("Fire upgrade", fireStrike);
+        printAction("Poison upgrade", venomStrike);
+        printAction("Critical + Poison", assassinStrike);
+        printAction("Critical + Poison + Fire", ultimateStrike);
 
-        // TODO: Replace the placeholder preview above with richer proof of runtime composition.
+        System.out.println("\nDecorator order proof:");
+        AttackAction orderOne=new FireRuneDecorator(
+                new CriticalFocusDecorator(basic)
+        );
+        AttackAction orderTwo=new CriticalFocusDecorator(
+                new FireRuneDecorator(basic)
+        );
+
+        printAction("Fire then Critical", orderOne);
+        printAction("Critical then Fire", orderTwo);
 
         System.out.println("\n--- Facade Preview ---");
-        DungeonFacade facade = new DungeonFacade().setRandomSeed(42L);
-        AdventureResult result = facade.runAdventure(hero, boss, enhanced);
+        DungeonFacade facade=new DungeonFacade().setRandomSeed(42L);
+        AdventureResult result=facade.runAdventure(hero, boss, ultimateStrike);
 
-        System.out.println("Winner: " + result.getWinner());
-        System.out.println("Rounds: " + result.getRounds());
-        System.out.println("Reward: " + result.getReward());
-        for (String line : result.getLog()) {
-            System.out.println(line);
+        System.out.println("Winner: "+result.getWinner());
+        System.out.println("Rounds: "+result.getRounds());
+        System.out.println("Reward: "+result.getReward());
+        System.out.println("\nAdventure log:");
+        for (String line:result.getLog()) {
+            System.out.println("- "+line);
         }
 
-        // TODO: Expand this demo so it clearly proves:
-        // 1) multiple decorator combinations
-        // 2) one full dungeon run through the facade
-        // 3) readable final summary
-
         System.out.println("\n=== Demo Complete ===");
+    }
+
+    private static void printAction(String label, AttackAction action) {
+        System.out.println(label+":");
+        System.out.println("  Name: "+action.getActionName());
+        System.out.println("  Damage: "+action.getDamage());
+        System.out.println("  Effects: "+action.getEffectSummary());
+        System.out.println();
     }
 }
